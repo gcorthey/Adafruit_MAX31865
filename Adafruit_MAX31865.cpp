@@ -56,7 +56,8 @@ Adafruit_MAX31865::Adafruit_MAX31865(int8_t spi_cs, SPIClass *theSPI)
     @return True
 */
 /**************************************************************************/
-bool Adafruit_MAX31865::begin(max31865_numwires_t wires) {
+bool Adafruit_MAX31865::begin(max31865_numwires_t wires)
+{
   spi_dev.begin();
 
   setWires(wires);
@@ -79,11 +80,14 @@ bool Adafruit_MAX31865::begin(max31865_numwires_t wires) {
     @return The raw unsigned 8-bit FAULT status register
 */
 /**************************************************************************/
-uint8_t Adafruit_MAX31865::readFault(max31865_fault_cycle_t fault_cycle) {
-  if (fault_cycle) {
+uint8_t Adafruit_MAX31865::readFault(max31865_fault_cycle_t fault_cycle)
+{
+  if (fault_cycle)
+  {
     uint8_t cfg_reg = readRegister8(MAX31865_CONFIG_REG);
     cfg_reg &= 0x11; // mask out wire and filter bits
-    switch (fault_cycle) {
+    switch (fault_cycle)
+    {
     case MAX31865_FAULT_AUTO:
       writeRegister8(MAX31865_CONFIG_REG, (cfg_reg | 0b10000100));
       delay(1);
@@ -107,7 +111,8 @@ uint8_t Adafruit_MAX31865::readFault(max31865_fault_cycle_t fault_cycle) {
     @brief Clear all faults in FAULTSTAT
 */
 /**************************************************************************/
-void Adafruit_MAX31865::clearFault(void) {
+void Adafruit_MAX31865::clearFault(void)
+{
   uint8_t t = readRegister8(MAX31865_CONFIG_REG);
   t &= ~0x2C;
   t |= MAX31865_CONFIG_FAULTSTAT;
@@ -120,11 +125,15 @@ void Adafruit_MAX31865::clearFault(void) {
     @param b If true bias is enabled, else disabled
 */
 /**************************************************************************/
-void Adafruit_MAX31865::enableBias(bool b) {
+void Adafruit_MAX31865::enableBias(bool b)
+{
   uint8_t t = readRegister8(MAX31865_CONFIG_REG);
-  if (b) {
+  if (b)
+  {
     t |= MAX31865_CONFIG_BIAS; // enable bias
-  } else {
+  }
+  else
+  {
     t &= ~MAX31865_CONFIG_BIAS; // disable bias
   }
   writeRegister8(MAX31865_CONFIG_REG, t);
@@ -136,11 +145,15 @@ void Adafruit_MAX31865::enableBias(bool b) {
     @param b If true, auto conversion is enabled
 */
 /**************************************************************************/
-void Adafruit_MAX31865::autoConvert(bool b) {
+void Adafruit_MAX31865::autoConvert(bool b)
+{
   uint8_t t = readRegister8(MAX31865_CONFIG_REG);
-  if (b) {
+  if (b)
+  {
     t |= MAX31865_CONFIG_MODEAUTO; // enable autoconvert
-  } else {
+  }
+  else
+  {
     t &= ~MAX31865_CONFIG_MODEAUTO; // disable autoconvert
   }
   writeRegister8(MAX31865_CONFIG_REG, t);
@@ -153,11 +166,15 @@ void Adafruit_MAX31865::autoConvert(bool b) {
 */
 /**************************************************************************/
 
-void Adafruit_MAX31865::enable50Hz(bool b) {
+void Adafruit_MAX31865::enable50Hz(bool b)
+{
   uint8_t t = readRegister8(MAX31865_CONFIG_REG);
-  if (b) {
+  if (b)
+  {
     t |= MAX31865_CONFIG_FILT50HZ;
-  } else {
+  }
+  else
+  {
     t &= ~MAX31865_CONFIG_FILT50HZ;
   }
   writeRegister8(MAX31865_CONFIG_REG, t);
@@ -171,7 +188,8 @@ void Adafruit_MAX31865::enable50Hz(bool b) {
     @param upper raw upper threshold
 */
 /**************************************************************************/
-void Adafruit_MAX31865::setThresholds(uint16_t lower, uint16_t upper) {
+void Adafruit_MAX31865::setThresholds(uint16_t lower, uint16_t upper)
+{
   writeRegister8(MAX31865_LFAULTLSB_REG, lower & 0xFF);
   writeRegister8(MAX31865_LFAULTMSB_REG, lower >> 8);
   writeRegister8(MAX31865_HFAULTLSB_REG, upper & 0xFF);
@@ -184,7 +202,8 @@ void Adafruit_MAX31865::setThresholds(uint16_t lower, uint16_t upper) {
     @return The raw unsigned 16-bit value, NOT temperature!
 */
 /**************************************************************************/
-uint16_t Adafruit_MAX31865::getLowerThreshold(void) {
+uint16_t Adafruit_MAX31865::getLowerThreshold(void)
+{
   return readRegister16(MAX31865_LFAULTMSB_REG);
 }
 
@@ -194,7 +213,8 @@ uint16_t Adafruit_MAX31865::getLowerThreshold(void) {
     @return The raw unsigned 16-bit value, NOT temperature!
 */
 /**************************************************************************/
-uint16_t Adafruit_MAX31865::getUpperThreshold(void) {
+uint16_t Adafruit_MAX31865::getUpperThreshold(void)
+{
   return readRegister16(MAX31865_HFAULTMSB_REG);
 }
 
@@ -205,11 +225,15 @@ uint16_t Adafruit_MAX31865::getUpperThreshold(void) {
     @param wires The number of wires in enum format
 */
 /**************************************************************************/
-void Adafruit_MAX31865::setWires(max31865_numwires_t wires) {
+void Adafruit_MAX31865::setWires(max31865_numwires_t wires)
+{
   uint8_t t = readRegister8(MAX31865_CONFIG_REG);
-  if (wires == MAX31865_3WIRE) {
+  if (wires == MAX31865_3WIRE)
+  {
     t |= MAX31865_CONFIG_3WIRE;
-  } else {
+  }
+  else
+  {
     // 2 or 4 wire
     t &= ~MAX31865_CONFIG_3WIRE;
   }
@@ -229,7 +253,8 @@ void Adafruit_MAX31865::setWires(max31865_numwires_t wires) {
     @returns Temperature in C
 */
 /**************************************************************************/
-float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor) {
+float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor)
+{
   return calculateTemperature(readRTD(), RTDnominal, refResistor);
 }
 /**************************************************************************/
@@ -237,7 +262,7 @@ float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor) {
     @brief Calculate the temperature in C from the RTD through calculation of
    the resistance. Uses
    http://www.analog.com/media/en/technical-documentation/application-notes/AN709_0.pdf
-   technique
+   technique for the calculation of temperatures above 0 ºC (Resistance > RTDNominal)
     @param RTDraw The raw 16-bit value from the RTD_REG
     @param RTDnominal The 'nominal' resistance of the RTD sensor, usually 100
     or 1000
@@ -247,44 +272,31 @@ float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor) {
 */
 /**************************************************************************/
 float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
-                                              float refResistor) {
-  float W, Z1, Z2, Z3, Z4, Rt, temp;
+                                              float refResistor)
+{
+  float W, Rt, temp;
 
   Rt = RTDraw;
   Rt /= 32768;
   Rt *= refResistor;
 
-  // Serial.print("\nResistance: "); Serial.println(Rt, 8);
-
-  if (Rt > RTDnominal)
+  W = Rt / RTDnominal;
+  temp = 0;
+  if (W > 1)
   {
-      Z1 = -RTD_A;
-      Z2 = RTD_A * RTD_A - (4 * RTD_B);
-      Z3 = (4 * RTD_B) / RTDnominal;
-      Z4 = 2 * RTD_B;
-
-      temp = Z2 + (Z3 * Rt);
-      temp = (sqrt(temp) + Z1) / Z4;
+    for (int i = 0; i < 6; i++)
+    {
+      temp = (W - 1) / (RTD_A + RTD_B * temp);
+    }
   }
   else
   {
-      W = Rt  / RTDnominal;
-      temp = 0 ; 
-      if (W > 1)
-      { 
-          for(int i = 0; i < 6; i++)
-          {
-              temp = (W-1) / ( RTD_A + RTD_B * temp );        
-          }
-      }
-      else
-      {
-          for(int i = 0; i < 6; i++)
-          {    
-              temp  = (W-1) / ( RTD_A + RTD_B*temp + RTD_C*temp*temp*(temp-100) );   
-          }
-      }
+    for (int i = 0; i < 6; i++)
+    {
+      temp = (W - 1) / (RTD_A + RTD_B * temp + RTD_C * temp * temp * (temp - 100));
+    }
   }
+  
   return temp;
 }
 
@@ -294,7 +306,8 @@ float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
     @return The raw unsigned 16-bit value, NOT temperature!
 */
 /**************************************************************************/
-uint16_t Adafruit_MAX31865::readRTD(void) {
+uint16_t Adafruit_MAX31865::readRTD(void)
+{
   clearFault();
   enableBias(true);
   delay(10);
@@ -315,14 +328,16 @@ uint16_t Adafruit_MAX31865::readRTD(void) {
 
 /**********************************************/
 
-uint8_t Adafruit_MAX31865::readRegister8(uint8_t addr) {
+uint8_t Adafruit_MAX31865::readRegister8(uint8_t addr)
+{
   uint8_t ret = 0;
   readRegisterN(addr, &ret, 1);
 
   return ret;
 }
 
-uint16_t Adafruit_MAX31865::readRegister16(uint8_t addr) {
+uint16_t Adafruit_MAX31865::readRegister16(uint8_t addr)
+{
   uint8_t buffer[2] = {0, 0};
   readRegisterN(addr, buffer, 2);
 
@@ -334,13 +349,15 @@ uint16_t Adafruit_MAX31865::readRegister16(uint8_t addr) {
 }
 
 void Adafruit_MAX31865::readRegisterN(uint8_t addr, uint8_t buffer[],
-                                      uint8_t n) {
+                                      uint8_t n)
+{
   addr &= 0x7F; // make sure top bit is not set
 
   spi_dev.write_then_read(&addr, 1, buffer, n);
 }
 
-void Adafruit_MAX31865::writeRegister8(uint8_t addr, uint8_t data) {
+void Adafruit_MAX31865::writeRegister8(uint8_t addr, uint8_t data)
+{
   addr |= 0x80; // make sure top bit is set
 
   uint8_t buffer[2] = {addr, data};
