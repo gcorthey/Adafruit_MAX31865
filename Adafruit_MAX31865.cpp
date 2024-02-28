@@ -248,7 +248,7 @@ float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor) {
 /**************************************************************************/
 float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
                                               float refResistor) {
-  float W, Rt, temp;
+  float W, Z1, Z2, Z3, Z4, Rt, temp;
 
   Rt = RTDraw;
   Rt /= 32768;
@@ -270,18 +270,18 @@ float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
   {
       W = Rt  / RTDnominal;
       temp = 0 ; 
-      if (W > 1);
+      if (W > 1)
       { 
           for(int i = 0; i < 6; i++)
           {
-              temp = (W-1) / ( RTD_A + RTD_B * t );        
+              temp = (W-1) / ( RTD_A + RTD_B * temp );        
           }
       }
       else
       {
           for(int i = 0; i < 6; i++)
           {    
-              temp  = (W-1) / ( RTD_A + RTD_B*temp + RTD_C*temp**2*(temp-100) );   
+              temp  = (W-1) / ( RTD_A + RTD_B*temp + RTD_C*temp*temp*(temp-100) );   
           }
       }
   }
