@@ -248,7 +248,7 @@ float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor) {
 /**************************************************************************/
 float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
                                               float refResistor) {
-  float Z1, Z2, Z3, Z4, Rt, temp;
+  float W, Rt, temp;
 
   Rt = RTDraw;
   Rt /= 32768;
@@ -256,34 +256,35 @@ float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
 
   // Serial.print("\nResistance: "); Serial.println(Rt, 8);
 
-  Z1 = -RTD_A;
-  Z2 = RTD_A * RTD_A - (4 * RTD_B);
-  Z3 = (4 * RTD_B) / RTDnominal;
-  Z4 = 2 * RTD_B;
+  if (Rt > RTDnominal)
+  {
+      Z1 = -RTD_A;
+      Z2 = RTD_A * RTD_A - (4 * RTD_B);
+      Z3 = (4 * RTD_B) / RTDnominal;
+      Z4 = 2 * RTD_B;
 
-  temp = Z2 + (Z3 * Rt);
-  temp = (sqrt(temp) + Z1) / Z4;
-
-  if (temp >= 0)
-    return temp;
-
-  // ugh.
-  Rt /= RTDnominal;
-  Rt *= 100; // normalize to 100 ohm
-
-  float rpoly = Rt;
-
-  temp = -242.02;
-  temp += 2.2228 * rpoly;
-  rpoly *= Rt; // square
-  temp += 2.5859e-3 * rpoly;
-  rpoly *= Rt; // ^3
-  temp -= 4.8260e-6 * rpoly;
-  rpoly *= Rt; // ^4
-  temp -= 2.8183e-8 * rpoly;
-  rpoly *= Rt; // ^5
-  temp += 1.5243e-10 * rpoly;
-
+      temp = Z2 + (Z3 * Rt);
+      temp = (sqrt(temp) + Z1) / Z4;
+  }
+  else
+  {
+      W = Rt  / RTDnominal;
+      temp = 0 ; 
+      if (W > 1);
+      { 
+          for(int i = 0; i < 6; i++)
+          {
+              temp = (W-1) / ( RTD_A + RTD_B * t );        
+          }
+      }
+      else
+      {
+          for(int i = 0; i < 6; i++)
+          {    
+              temp  = (W-1) / ( RTD_A + RTD_B*temp + RTD_C*temp**2*(temp-100) );   
+          }
+      }
+  }
   return temp;
 }
 
