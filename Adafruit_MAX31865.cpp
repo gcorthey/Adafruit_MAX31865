@@ -259,10 +259,12 @@ float Adafruit_MAX31865::temperature(float RTDnominal, float refResistor)
 }
 /**************************************************************************/
 /*!
-    @brief Calculate the temperature in C from the RTD through calculation of
-   the resistance. Uses
-   http://www.analog.com/media/en/technical-documentation/application-notes/AN709_0.pdf
-   technique for the calculation of temperatures above 0 ºC (Resistance > RTDNominal)
+    @brief Calculate the temperature in C from the RTD using the Callendar-Van Dusen
+    (CVD) equation, following the procedure described in:
+    Nicholas, J. V.., White, D. R.. Traceable Temperatures: An Introduction to
+    Temperature Measurement and Calibration. UK: Wiley, 2001.
+    https://www.google.com.ar/books/edition/Traceable_Temperatures/2CfXEFb8jV4C?hl=es-419
+
     @param RTDraw The raw 16-bit value from the RTD_REG
     @param RTDnominal The 'nominal' resistance of the RTD sensor, usually 100
     or 1000
@@ -296,7 +298,7 @@ float Adafruit_MAX31865::calculateTemperature(uint16_t RTDraw, float RTDnominal,
       temp = (W - 1) / (RTD_A + RTD_B * temp + RTD_C * temp * temp * (temp - 100));
     }
   }
-  
+
   return temp;
 }
 
